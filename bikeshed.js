@@ -3,6 +3,7 @@ const bikeForm = document.getElementById('bikeForm');
 const bikeName = document.getElementById('bikeName');
 const bikeList = document.getElementById('bikeList');
 const bikeNameError = document.getElementById('bikeNameError');
+const bikeGear = document.getElementById('bikeGear');
 
 function addBike(e){
 
@@ -15,7 +16,8 @@ function addBike(e){
     } else {
 
         const bike = {
-            bikeName: bikeName.value
+            bikeName: bikeName.value,
+            bikeGear: bikeGear.value
         }
 
         bikes.push(bike);
@@ -37,7 +39,7 @@ function updateBikes(){
     bikes.forEach(function (bike){
 
         const li = document.createElement('li');
-        li.appendChild(document.createTextNode(`${bike.bikeName}`));
+        li.appendChild(document.createTextNode(`Cykel: ${bike.bikeName} Antal gear: ${bike.bikeGear}`));
 
         bikeList.appendChild(li);
 
