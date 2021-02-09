@@ -1,4 +1,4 @@
-const bikes = [];
+let bikes = [];
 const bikeForm = document.getElementById('bikeForm');
 const bikeName = document.getElementById('bikeName');
 const bikeList = document.getElementById('bikeList');
@@ -39,7 +39,26 @@ function updateBikes(){
     bikes.forEach(function (bike){
 
         const li = document.createElement('li');
-        li.appendChild(document.createTextNode(`Cykel: ${bike.bikeName} Antal gear: ${bike.bikeGear}`));
+        li.appendChild(document.createTextNode(`Cykel: ${bike.bikeName} Antal gear: ${bike.bikeGear} `));
+
+        const span = document.createElement('span');
+        span.appendChild(document.createTextNode(`X`));
+        span.classList.add('remove');
+
+        span.addEventListener('click', () => {
+            const newBikes = [];
+
+            li.remove();
+
+            for(let i = 0; i < bikes.length; i++){
+                if(bikes[i].bikeName !== bike.bikeName){
+                    newBikes.push(bikes[i])
+                }
+            }
+            bikes = newBikes;
+        });
+
+        li.appendChild(span);
 
         bikeList.appendChild(li);
 
