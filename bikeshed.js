@@ -4,7 +4,9 @@ const bikeName = document.getElementById('bikeName');
 const bikeList = document.getElementById('bikeList');
 const bikeNameError = document.getElementById('bikeNameError');
 const bikeGear = document.getElementById('bikeGear');
-let bikeID;
+const bikeType = document.getElementById('bikeType');
+const sortBtn = document.getElementById('sortBtn');
+const listSort = document.getElementById('listSort');
 
 function addBike(e){
 
@@ -16,23 +18,18 @@ function addBike(e){
 
     } else {
 
-        if(bikes){
-            for(let i = 0; bikes.length >= i; i++){
-                bikeID = i;
-            }
-        }
-
         const bike = {
-            bikeID: bikeID,
+            bikeID: bikes.length,
             bikeName: bikeName.value,
-            bikeGear: bikeGear.value
+            bikeGear: bikeGear.value,
+            bikeType: bikeType.value
         }
 
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
-        if(bikes.find(element => element.bikeName === bikeName.value)){
+        /*if(bikes.find(element => element.bikeName === bikeName.value)){
             bikeNameError.innerHTML = 'Cyklen findes allerede';
             return
-        }
+        }*/
 
         bikes.push(bike);
 
@@ -53,29 +50,85 @@ function updateBikes(){
     bikes.forEach(function (bike){
 
         const li = document.createElement('li');
-        li.appendChild(document.createTextNode(`Cykel: ID: ${bike.bikeID}, Navn: ${bike.bikeName}, Antal gear: ${bike.bikeGear} `));
+        li.appendChild(document.createTextNode(`Cykel: ID: ${bike.bikeID}, Navn: ${bike.bikeName}, Antal gear: ${bike.bikeGear}, Type: ${bike.bikeType} `));
 
         const span = document.createElement('span');
         span.appendChild(document.createTextNode(`X`));
         span.classList.add('remove');
 
         span.addEventListener('click', () => {
-            const newBikes = [];
-
+            //let newBikes = [];
             li.remove();
 
-            for(let i = 0; i < bikes.length; i++){
-                if(bikes[i].bikeName !== bike.bikeName){
-                    newBikes.push(bikes[i])
+            bikes = bikes.filter(b => b.bikeID !== bike.bikeID)
+            /*for(let i = 0; i < bikes.length; i++){
+                if(bikes[i].bikeID !== bike.bikeID){
+                    newBikes.push(bikes[i]);
                 }
             }
-            bikes = newBikes;
+
+            bikes = newBikes;*/
+
         });
 
         li.appendChild(span);
 
         bikeList.appendChild(li);
 
+    });
+}
+
+sortBtn.addEventListener('click', function (){
+
+    if(listSort.value === 'Name'){
+        sortName();
+        updateBikes();
+    }
+    else if(listSort.value === 'Type'){
+        sortType();
+        updateBikes();
+    }
+    else if(listSort.value === 'Gear'){
+        sortGear();
+        updateBikes();
+    }
+
+})
+
+//https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+function sortGear(){
+    bikes.sort(function (bike1, bike2) {
+        return bike1.bikeGear - bike2.bikeGear;
+    });
+}
+
+function sortName(){
+    bikes.sort(function(a, b) {
+        let nameA = a.bikeName.toUpperCase(); // ignore upper and lowercase
+        let nameB = b.bikeName.toUpperCase(); // ignore upper and lowercase
+        if (nameA < nameB) {
+            return -1;
+        }
+        if (nameA > nameB) {
+            return 1;
+        }
+        // names must be equal
+        return 0;
+    });
+}
+
+function sortType(){
+    bikes.sort(function(a, b) {
+        let nameA = a.bikeType.toUpperCase(); // ignore upper and lowercase
+        let nameB = b.bikeType.toUpperCase(); // ignore upper and lowercase
+        if (nameA < nameB) {
+            return -1;
+        }
+        if (nameA > nameB) {
+            return 1;
+        }
+        // names must be equal
+        return 0;
     });
 }
 
