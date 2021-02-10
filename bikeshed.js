@@ -20,6 +20,12 @@ function addBike(e){
             bikeGear: bikeGear.value
         }
 
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
+        if(bikes.find(element => element.bikeName === bikeName.value)){
+            bikeNameError.innerHTML = 'Cyklen findes allerede';
+            return
+        }
+
         bikes.push(bike);
 
         bikeNameError.innerHTML = '';
