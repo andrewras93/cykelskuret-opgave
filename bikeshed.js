@@ -4,6 +4,7 @@ const bikeName = document.getElementById('bikeName');
 const bikeList = document.getElementById('bikeList');
 const bikeNameError = document.getElementById('bikeNameError');
 const bikeGear = document.getElementById('bikeGear');
+let bikeID;
 
 function addBike(e){
 
@@ -15,7 +16,14 @@ function addBike(e){
 
     } else {
 
+        if(bikes){
+            for(let i = 0; bikes.length >= i; i++){
+                bikeID = i;
+            }
+        }
+
         const bike = {
+            bikeID: bikeID,
             bikeName: bikeName.value,
             bikeGear: bikeGear.value
         }
@@ -45,7 +53,7 @@ function updateBikes(){
     bikes.forEach(function (bike){
 
         const li = document.createElement('li');
-        li.appendChild(document.createTextNode(`Cykel: ${bike.bikeName} Antal gear: ${bike.bikeGear} `));
+        li.appendChild(document.createTextNode(`Cykel: ID: ${bike.bikeID}, Navn: ${bike.bikeName}, Antal gear: ${bike.bikeGear} `));
 
         const span = document.createElement('span');
         span.appendChild(document.createTextNode(`X`));
