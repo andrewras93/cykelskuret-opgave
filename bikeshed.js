@@ -2,9 +2,15 @@ let bikes = [];
 const bikeForm = document.getElementById('bikeForm');
 const bikeName = document.getElementById('bikeName');
 const bikeList = document.getElementById('bikeList');
-const bikeNameError = document.getElementById('bikeNameError');
+const formErrMsg = document.getElementById('formErrMsg');
 const bikeGear = document.getElementById('bikeGear');
 const bikeType = document.getElementById('bikeType');
+const bikePrice = document.getElementById('bikePrice');
+
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat/format
+const options = { style: 'currency', currency: 'DKK' };
+const numberFormat = new Intl.NumberFormat('da-DA', options);
+
 const sortBtn = document.getElementById('sortBtn');
 const listSort = document.getElementById('listSort');
 
@@ -12,17 +18,22 @@ function addBike(e){
 
     e.preventDefault();
 
-    if(!bikeName.value){
+    if(!bikeName.value || !bikePrice.value){
 
-        bikeNameError.innerHTML = 'Udfyld venligst navn på cyklen';
+        formErrMsg.innerHTML = 'Udfyld venligst begge felter';
 
     } else {
+
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleDateString
+        const date = new Date();
 
         const bike = {
             bikeID: bikes.length,
             bikeName: bikeName.value,
             bikeGear: bikeGear.value,
-            bikeType: bikeType.value
+            bikeType: bikeType.value,
+            bikePrice: numberFormat.format(bikePrice.value),
+            date: date
         }
 
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find
@@ -33,9 +44,10 @@ function addBike(e){
 
         bikes.push(bike);
 
-        bikeNameError.innerHTML = '';
+        formErrMsg.innerHTML = '';
         bikeName.value = '';
         bikeName.focus();
+        bikePrice.value = '';
 
         updateBikes();
 
@@ -49,25 +61,21 @@ function updateBikes(){
 
     bikes.forEach(function (bike){
 
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleDateString
+        const dateFormat = { year: 'numeric', month: 'numeric', day: 'numeric' };
+
         const li = document.createElement('li');
-        li.appendChild(document.createTextNode(`Cykel: ID: ${bike.bikeID}, Navn: ${bike.bikeName}, Antal gear: ${bike.bikeGear}, Type: ${bike.bikeType} `));
+        li.appendChild(document.createTextNode(`Cykel: ID: ${bike.bikeID}, Navn: ${bike.bikeName}, Antal gear: ${bike.bikeGear}, Type: ${bike.bikeType}, Pris: ${bike.bikePrice}, Dato: ${bike.date.toLocaleDateString(undefined, dateFormat)} `));
 
         const span = document.createElement('span');
         span.appendChild(document.createTextNode(`X`));
         span.classList.add('remove');
 
         span.addEventListener('click', () => {
-            //let newBikes = [];
+
             li.remove();
 
             bikes = bikes.filter(b => b.bikeID !== bike.bikeID)
-            /*for(let i = 0; i < bikes.length; i++){
-                if(bikes[i].bikeID !== bike.bikeID){
-                    newBikes.push(bikes[i]);
-                }
-            }
-
-            bikes = newBikes;*/
 
         });
 
@@ -92,6 +100,14 @@ sortBtn.addEventListener('click', function (){
         sortGear();
         updateBikes();
     }
+    else if (listSort.value === 'Price'){
+        sortPrice();
+        updateBikes();
+    }
+    else if (listSort.value === 'Date'){
+        sortDate();
+        updateBikes();
+    }
 
 })
 
@@ -99,6 +115,12 @@ sortBtn.addEventListener('click', function (){
 function sortGear(){
     bikes.sort(function (bike1, bike2) {
         return bike1.bikeGear - bike2.bikeGear;
+    });
+}
+
+function sortPrice(){
+    bikes.sort(function (bike1, bike2) {
+        return bike1.bikePrice - bike2.bikePrice;
     });
 }
 
@@ -129,6 +151,14 @@ function sortType(){
         }
         // names must be equal
         return 0;
+    });
+}
+
+function  sortDate(){
+    bikes.sort(function(a,b){
+        // Turn your strings into dates, and then subtract them
+        // to get a value that is either negative, positive, or zero.
+        return new Date(b.date) - new Date(a.date);
     });
 }
 

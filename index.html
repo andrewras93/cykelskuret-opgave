@@ -18,7 +18,9 @@
             <legend>Cykelskuret</legend>
             <label for="bikeName">Navn</label>
             <input type="text" id="bikeName" placeholder="Navn">
-            <span id="bikeNameError"></span>
+            <label for="bikePrice">Pris</label>
+            <input type="number" id="bikePrice">
+            <span id="formErrMsg"></span>
             <br>
             <label for="bikeGear">Antal gear</label>
             <select name="bikeGear" id="bikeGear">
@@ -42,6 +44,8 @@
             <option value="Name">Navn</option>
             <option value="Type">Type</option>
             <option value="Gear">Gear</option>
+            <option value="Price">Pris</option>
+            <option value="Date">Seneste</option>
         </select>
         <button id="sortBtn">Sorter</button>
     <ul id="bikeList"></ul>
