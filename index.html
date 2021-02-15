@@ -19,7 +19,7 @@
             <label for="bikeName">Navn</label>
             <input type="text" id="bikeName" placeholder="Navn">
             <label for="bikePrice">Pris</label>
-            <input type="number" id="bikePrice">
+            <input type="number" step=".01" id="bikePrice">
             <span id="formErrMsg"></span>
             <br>
             <label for="bikeGear">Antal gear</label>
@@ -32,9 +32,9 @@
             <br>
             <label for="bikeType">Type</label>
             <select name="bikeType" id="bikeType">
-                <option value="Mountain bike">Mountain bike</option>
-                <option value="City bike">City bike</option>
-                <option value="Tandem bike">Tandem bike</option>
+                <option value="mountainBike">Mountain bike</option>
+                <option value="cityBike">City bike</option>
+                <option value="tandemBike">Tandem bike</option>
             </select>
             <button>Tilføj Cykel</button>
         </fieldset>
@@ -48,6 +48,14 @@
             <option value="Date">Seneste</option>
         </select>
         <button id="sortBtn">Sorter</button>
+    <label>Type:</label>
+    <input type="checkbox" class="filterVal" id="mountainBike" name="mountainBike" value="mountainBike">
+    <label for="mountainBike"> Mountain bike</label>
+    <input type="checkbox" class="filterVal" id="cityBike" name="cityBike" value="cityBike">
+    <label for="cityBike"> City bike</label>
+    <input type="checkbox" class="filterVal" id="tandemBike" name="tandemBike" value="tandemBike">
+    <label for="tandemBike"> Tandem bike</label>
+    <button id="filterBtn">Filtrer</button>
     <ul id="bikeList"></ul>
 </main>
 
