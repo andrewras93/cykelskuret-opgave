@@ -9,7 +9,7 @@ class DataBase {
         let db = localStorage.getItem("database");
         db = db ? JSON.parse(db) : [];
 
-        for(var i = 0; i < db.length; i++) {
+        for(let i = 0; i < db.length; i++) {
             let bike = db[i];
             this.add(bike.name, bike.gear, bike.type, bike.price, bike.date);
         }
@@ -39,13 +39,7 @@ class DataBase {
 
 
     remove(id) {
-        let rs = this.items.find(x => x.id === id);
-        if(!rs) return error('Bike id was not found');
-
-        let index = this.items.indexOf(rs);
-        if(!index) return error('Bike index was not found');
-
-        this.items.splice(index, 1);
+        this.items = this.items.filter(b => b.id !== id);
         this.updateLocalStorage();
     }
 
@@ -114,7 +108,7 @@ function addBike(e){
 
         database.add(bikeName.value, bikeGear.value, bikeType.value, bikePrice.value, date)
 
-        bikes.push(bike); // Indsætter vores bike objekt, med alle dets værdier, til sidst i vores bikes array.
+        //bikes.push(bike); // Indsætter vores bike objekt, med alle dets værdier, til sidst i vores bikes array.
         // Vi har altså nu tilføjet en cykel til vores bikes array.
 
         bikeName.value = ''; // Vi ryder det der står i input feltet til bikeName, så man er klar til evt. at indtaste navnet på en ny cykel.
@@ -136,7 +130,7 @@ function updateBikes() {
     bikes.forEach(function (bike){
     // Tager og 'kigger' igennem vores bikes array. For hvert element (bike) vi har i vores array, skal følgende kode køres, på det pågældende element.
 
-        if( filters.length === 0 || filters.includes(bike.bikeType)){
+        if( filters.length === 0 || filters.includes(bike.type)){
         // Hvis længden på vores filter array er lig med 0, hvilket vil sige det er tomt (hvilket det er fra start af),
         // eller hvis det inkluderer en type af cykel, skal følgende ske:
 
@@ -158,7 +152,9 @@ function updateBikes() {
 
                 li.remove(); // Det pågælende elements 'li' og dens indhold fjernes (inkluderer også 'span'), men kun fra selve 'dokumentet' og ikke fra vores array.
 
-                bikes = bikes.filter(b => b.bikeID !== bike.bikeID)
+                database.remove(bike.id);
+
+                //bikes = bikes.filter(b => b.bikeID !== bike.bikeID)
                 // Vi filtrerer igennem vores bikes array og laver et nyt array, med de cykler hvor id'et ikke matcher det der er blevet klikket på.
                 // Dvs. det tager et element (b) ud, kigger på det elements id og holder det oppe imod det 'originale' id, matches de ikke, bliver det element (b) sat i det nye array.
                 // Hvis det skulle skrives primitivt:
