@@ -1,4 +1,62 @@
-import 'database';
+//START OF DATABASE SECTION
+
+class DataBase {
+    items = [];
+
+    constructor() {
+        this.items = [];
+
+        let db = localStorage.getItem("database");
+        db = db ? JSON.parse(db) : [];
+
+        for(var i = 0; i < db.length; i++) {
+            let bike = db[i];
+            this.add(bike.name, bike.gear, bike.type, bike.price, bike.date);
+        }
+    }
+
+    add(name, gear, type, price, date) {
+
+        this.items.push({
+            id: this.items.length,
+            name: name,
+            gear: gear,
+            type: type,
+            price: parseFloat(price),
+            date: new Date(date)
+        });
+
+        console.log(this.items);
+
+        this.updateLocalStorage();
+    }
+    
+
+    ////0 = 1, 1 = 5, 2 = 8, 3 = 9
+    //arr = [1, 5, 8, 9] 
+    //[1, 8, 9]
+    //arr.splice(1, 1);
+
+
+    remove(id) {
+        let rs = this.items.find(x => x.id === id);
+        if(!rs) return error('Bike id was not found');
+
+        let index = this.items.indexOf(rs);
+        if(!index) return error('Bike index was not found');
+
+        this.items.splice(index, 1);
+        this.updateLocalStorage();
+    }
+
+    updateLocalStorage() {
+        localStorage.setItem("database", JSON.stringify(this.items));
+    }
+}
+
+
+
+//END OF DATABASE SECTION
 
 let bikes = [];
 let filters = [];
@@ -18,7 +76,11 @@ const mountainBike = document.getElementById('mountainBike');
 const cityBike = document.getElementById('cityBike');
 const tandemBike = document.getElementById('tandemBike');
 
+let database = new DataBase();
+updateBikes(); //Initialize first update if database had items from local storage
+
 function addBike(e){
+
 // Hvad der skal ske når vi trykker 'Tilføj Cykel'.
 
     e.preventDefault();
@@ -37,7 +99,8 @@ function addBike(e){
 
         const date = new Date();
         // Tager dato og tid, på det tidspunkt der blev trykket på 'Tilføj Cykel'.
-
+ 
+        
         const bike = {
         // Vores cykel objekt.
 
@@ -48,6 +111,8 @@ function addBike(e){
             bikePrice: bikePrice.value,
             date: date
         }
+
+        database.add(bikeName.value, bikeGear.value, bikeType.value, bikePrice.value, date)
 
         bikes.push(bike); // Indsætter vores bike objekt, med alle dets værdier, til sidst i vores bikes array.
         // Vi har altså nu tilføjet en cykel til vores bikes array.
@@ -66,6 +131,8 @@ function updateBikes() {
 
     bikeList.innerHTML = '';
 
+    bikes = database.items;
+
     bikes.forEach(function (bike){
     // Tager og 'kigger' igennem vores bikes array. For hvert element (bike) vi har i vores array, skal følgende kode køres, på det pågældende element.
 
@@ -77,7 +144,7 @@ function updateBikes() {
             const li = document.createElement('li'); // For hvert element i vores bikes array skabes der et '<li></li>' tag.
             const span = document.createElement('span'); // Udover vores '<li>' tag, bliver der også tilføjet et '<span></span>' tag for hvert element.
 
-            li.appendChild(document.createTextNode(`Cykel: ID: ${bike.bikeID}, Navn: ${bike.bikeName}, Antal gear: ${bike.bikeGear}, Type: ${bike.bikeType}, Pris: ${numberFormat.format(bike.bikePrice)}, Dato: ${bike.date.toLocaleDateString(undefined, dateFormat)} `));
+            li.appendChild(document.createTextNode(`Cykel: ID: ${bike.id}, Navn: ${bike.name}, Antal gear: ${bike.gear}, Type: ${bike.type}, Pris: ${numberFormat.format(bike.price)}, Dato: ${bike.date.toLocaleDateString(undefined, dateFormat)} `));
             // Vi tilføjer en 'TextNode' til vores '<li>' tag, hvor vi skriver værdierne for hvert element (de enkelte cyklers værdier, som vi har fået fra vores input felter (bortset fra date)).
             li.appendChild(span); // Tilføjer også 'span' til vores 'li'.
 
