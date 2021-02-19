@@ -1,3 +1,5 @@
+import 'database';
+
 let bikes = [];
 let filters = [];
 const bikeForm = document.getElementById('bikeForm');
