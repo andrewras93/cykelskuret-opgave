@@ -2,6 +2,7 @@
 
 class DataBase {
     items = [];
+    
 
     constructor() {
         this.items = [];
@@ -11,11 +12,11 @@ class DataBase {
 
         for(let i = 0; i < db.length; i++) {
             let bike = db[i];
-            this.add(bike.name, bike.gear, bike.type, bike.price, bike.date);
+            this.add(bike.name, bike.gear, bike.type, bike.price, bike.date, bike.lastModified);
         }
     }
 
-    add(name, gear, type, price, date) {
+    add(name, gear, type, price, date, lastModified) {
 
         this.items.push({
             id: this.items.length,
@@ -23,14 +24,27 @@ class DataBase {
             gear: gear,
             type: type,
             price: parseFloat(price),
-            date: new Date(date)
+            date: new Date(date),
+            lastModified: lastModified ?? new Date()
         });
-
-        console.log(this.items);
 
         this.updateLocalStorage();
     }
     
+    modify(bike) {
+        let rs = find(bike.id);
+        if(!rs) return rs;
+
+        bike.lastModified = new Date();
+        let index = this.items.indexOf(bike.id);
+        this.items[index] = bike;
+        this.updateLocalStorage();
+    }
+
+    find(id) {
+        let rs = this.items.find(id);
+        return rs ? rs : error("Bike id not found");
+    }
 
     ////0 = 1, 1 = 5, 2 = 8, 3 = 9
     //arr = [1, 5, 8, 9] 
@@ -39,7 +53,7 @@ class DataBase {
 
 
     remove(id) {
-        this.items = this.items.filter(b => b.id !== id);
+        this.items = this.items.filter(b => b.id !== id); 
         this.updateLocalStorage();
     }
 
@@ -137,13 +151,20 @@ function updateBikes() {
             const dateFormat = { year: 'numeric', month: 'numeric', day: 'numeric' }; // Formaterer vores date variabel, så vi kan udskrive det pænt med år, måned og dag angivet som tal.
             const li = document.createElement('li'); // For hvert element i vores bikes array skabes der et '<li></li>' tag.
             const span = document.createElement('span'); // Udover vores '<li>' tag, bliver der også tilføjet et '<span></span>' tag for hvert element.
+            const span2 = document.createElement('span');
 
             li.appendChild(document.createTextNode(`Cykel: ID: ${bike.id}, Navn: ${bike.name}, Antal gear: ${bike.gear}, Type: ${bike.type}, Pris: ${numberFormat.format(bike.price)}, Dato: ${bike.date.toLocaleDateString(undefined, dateFormat)} `));
             // Vi tilføjer en 'TextNode' til vores '<li>' tag, hvor vi skriver værdierne for hvert element (de enkelte cyklers værdier, som vi har fået fra vores input felter (bortset fra date)).
             li.appendChild(span); // Tilføjer også 'span' til vores 'li'.
+            li.appendChild(span2);
 
             span.appendChild(document.createTextNode(`X`)); // Vi tilføjer endnu engang en 'TextNode', denne gang til vores '<span>', hvor vi skriver et simpelt kryds.
             span.classList.add('remove'); // Tilføjer en klasse til vores '<span>'.
+
+            //////////////////////////////////////////////////////////
+            span2.appendChild(document.createTextNode(`Modify`));
+            span2.classList.add('modify');
+            /////////////////////////////////////////////////////////
 
             bikeList.appendChild(li); // Udskriver vores cykler til 'dokumentet', ved at tilføje dem til vores bikeList '<ul>'.
 
@@ -169,6 +190,12 @@ function updateBikes() {
                 bikes = newBikes;*/
 
             });
+
+            //Modify the bike when called
+            span2.addEventListener('click', () => {
+                database.modify(bike);
+            });
+            
 
         }
 
