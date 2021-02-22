@@ -137,9 +137,16 @@ function updateBikes() {
 
             });
 
-            //Modify the bike when called
             span2.addEventListener('click', () => {
-                database.modify(bike);
+                console.log('clicked');
+                const modal = document.getElementById('modal');
+                const h3 = document.createElement('h3');
+
+                h3.appendChild(document.createTextNode('Modify'));
+
+                modal.appendChild(h3);
+
+                //database.modify(bike);
             });            
 
 
