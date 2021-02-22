@@ -25,25 +25,19 @@ class DataBase {
             type: type,
             price: parseFloat(price),
             date: new Date(date),
-            lastModified: lastModified ?? new Date()
+            lastModified: lastModified ? lastModified : new Date()
         });
 
         this.updateLocalStorage();
     }
     
     modify(bike) {
-        let rs = find(bike.id);
-        if(!rs) return rs;
 
         bike.lastModified = new Date();
         let index = this.items.indexOf(bike.id);
         this.items[index] = bike;
         this.updateLocalStorage();
-    }
 
-    find(id) {
-        let rs = this.items.find(id);
-        return rs ? rs : error("Bike id not found");
     }
 
     sort(func) {
