@@ -138,13 +138,50 @@ function updateBikes() {
             });
 
             span2.addEventListener('click', () => {
-                console.log('clicked');
+
                 const modal = document.getElementById('modal');
+                const div = document.createElement('div');
                 const h3 = document.createElement('h3');
+                const nameInput = document.createElement('input');
+                const priceInput = document.createElement('input');
+                const gearSelect = document.createElement('select');
+                const typeSelect = document.createElement('select');
+                const span = document.createElement('span');
+                const btn = document.createElement('button');
+                let nameVal = bike.name;
+                let priceVal = bike.price;
+                let gearVal = bike.gear;
+                let typeVal = bike.type;
+
+                modal.innerHTML = '';
 
                 h3.appendChild(document.createTextNode('Modify'));
+                span.appendChild(document.createTextNode('X'));
+                btn.appendChild(document.createTextNode('Gem'));
 
-                modal.appendChild(h3);
+                span.classList.add('remove');
+                div.classList.add('modalContent');
+
+                modal.appendChild(div);
+                div.appendChild(h3);
+                div.appendChild(nameInput).value = nameVal;
+                div.appendChild(priceInput).value = priceVal;
+                div.appendChild(gearSelect).value = gearVal;
+                div.appendChild(typeSelect).value = typeVal;
+                div.appendChild(btn);
+                div.appendChild(span);
+
+                modal.style.display = 'block';
+
+                span.onclick = function(event) {
+                    modal.style.display = 'none';
+                }
+
+                window.onclick = function (event) {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                }
 
                 //database.modify(bike);
             });            
