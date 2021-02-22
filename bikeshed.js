@@ -30,6 +30,10 @@ class DataBase {
 
         this.updateLocalStorage();
     }
+
+    sort(func) {
+        return this.items.sort(func)
+    }
     
 
     ////0 = 1, 1 = 5, 2 = 8, 3 = 9
@@ -174,13 +178,13 @@ sortBtn.addEventListener('click', function (){
 });
 
 function sortGear(){
-    bikes.sort(function (bike1, bike2) {
+    database.sort(function (bike1, bike2) {
         return bike1.bikeGear - bike2.bikeGear;
     });
 }
 
 function sortPrice(){
-    bikes.sort(function (bike1, bike2) {
+    database.sort(function (bike1, bike2) {
         return bike1.bikePrice - bike2.bikePrice;
     });
 }
