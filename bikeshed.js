@@ -34,13 +34,6 @@ class DataBase {
     sort(func) {
         return this.items.sort(func)
     }
-    
-
-    ////0 = 1, 1 = 5, 2 = 8, 3 = 9
-    //arr = [1, 5, 8, 9] 
-    //[1, 8, 9]
-    //arr.splice(1, 1);
-
 
     remove(id) {
         this.items = this.items.filter(b => b.id !== id);
@@ -51,8 +44,6 @@ class DataBase {
         localStorage.setItem("database", JSON.stringify(this.items));
     }
 }
-
-
 
 //END OF DATABASE SECTION
 
@@ -127,8 +118,6 @@ function updateBikes() {
                 li.remove();
                 database.remove(bike.id);
 
-                //bikes = bikes.filter(b => b.bikeID !== bike.bikeID)
-
             });
         }
     });
@@ -179,20 +168,20 @@ sortBtn.addEventListener('click', function (){
 
 function sortGear(){
     database.sort(function (bike1, bike2) {
-        return bike1.bikeGear - bike2.bikeGear;
+        return bike1.gear - bike2.gear;
     });
 }
 
 function sortPrice(){
     database.sort(function (bike1, bike2) {
-        return bike1.bikePrice - bike2.bikePrice;
+        return bike1.price - bike2.price;
     });
 }
 
 function sortName(){
-    bikes.sort(function(a, b) {
-        let nameA = a.bikeName.toUpperCase(); // ignore upper and lowercase
-        let nameB = b.bikeName.toUpperCase(); // ignore upper and lowercase
+    database.sort(function(a, b) {
+        let nameA = a.name.toUpperCase(); // ignore upper and lowercase
+        let nameB = b.name.toUpperCase(); // ignore upper and lowercase
         if (nameA < nameB) {
             return -1;
         }
@@ -205,9 +194,9 @@ function sortName(){
 }
 
 function sortType(){
-    bikes.sort(function(a, b) {
-        let nameA = a.bikeType.toUpperCase(); // ignore upper and lowercase
-        let nameB = b.bikeType.toUpperCase(); // ignore upper and lowercase
+    database.sort(function(a, b) {
+        let nameA = a.type.toUpperCase(); // ignore upper and lowercase
+        let nameB = b.type.toUpperCase(); // ignore upper and lowercase
         if (nameA < nameB) {
             return -1;
         }
@@ -220,7 +209,7 @@ function sortType(){
 }
 
 function  sortDate(){
-    bikes.sort(function(a,b){
+    database.sort(function(a,b){
         // Turn your strings into dates, and then subtract them
         // to get a value that is either negative, positive, or zero.
         return new Date(b.date) - new Date(a.date);
