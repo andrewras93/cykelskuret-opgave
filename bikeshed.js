@@ -40,6 +40,14 @@ class DataBase {
         this.updateLocalStorage();
     }
 
+    get getItems() {
+        if (this.items) {
+            return this.items;
+        } else {
+            return 'Items not found';
+        }
+    }
+
     updateLocalStorage() {
         localStorage.setItem("database", JSON.stringify(this.items));
     }
@@ -97,7 +105,7 @@ function updateBikes() {
 
     bikeList.innerHTML = '';
 
-    database.items.forEach(function (bike) {
+    database.getItems.forEach(function (bike) {
 
         if ( filters.length === 0 || filters.includes(bike.type)) {
 
