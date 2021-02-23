@@ -39,11 +39,7 @@ class DataBase {
     }
 
     get getItems() {
-        if (!this.items) {
-            return this.items = [];
-        } else {
-            return this.items;
-        }
+        return this.items;
     }
 
     updateLocalStorage() {
