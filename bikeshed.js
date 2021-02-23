@@ -26,8 +26,6 @@ class DataBase {
             date: new Date(date)
         });
 
-        console.log(this.items);
-
         this.updateLocalStorage();
     }
 
@@ -41,10 +39,10 @@ class DataBase {
     }
 
     get getItems() {
-        if (this.items) {
-            return this.items;
+        if (!this.items) {
+            return this.items = [];
         } else {
-            return 'Items not found';
+            return this.items;
         }
     }
 
