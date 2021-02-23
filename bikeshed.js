@@ -154,6 +154,7 @@ function updateBikes() {
                 const typeSelect = document.createElement('select');
                 const span = document.createElement('span');
                 const btn = document.createElement('button');
+                const modalErrMsg = document.createElement('span');
                 let idVal = bike.id;
                 let nameVal = bike.name;
                 let priceVal = bike.price;
@@ -199,6 +200,7 @@ function updateBikes() {
                 div.appendChild(typeSelect).value = typeVal;
                 div.appendChild(btn);
                 div.appendChild(span);
+                div.appendChild(modalErrMsg);
 
                 modal.style.display = 'block';
 
@@ -215,16 +217,26 @@ function updateBikes() {
                 btn.onclick = function () {
 
                     if (idVal === bike.id) {
-                        bike.name = nameInput.value;
-                        bike.price = priceInput.value;
-                        bike.gear = gearSelect.value;
-                        bike.type = typeSelect.value;
+
+                        if (!nameInput.value || !priceInput.value) {
+
+                            modalErrMsg.innerHTML = 'Udfyld venligst både Navn og Pris';
+
+                        } else {
+                            bike.name = nameInput.value;
+                            bike.price = priceInput.value;
+                            bike.gear = gearSelect.value;
+                            bike.type = typeSelect.value;
+
+                            database.modify(bike);
+                            database.updateLocalStorage();
+                            updateBikes();
+                            modal.style.display = 'none';
+                        }
+                    } else {
+                        return 'ID does not match.'
                     }
 
-                    database.modify(bike);
-                    database.updateLocalStorage();
-                    updateBikes();
-                    modal.style.display = 'none';
                 }
 
             });
