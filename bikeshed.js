@@ -152,6 +152,11 @@ function updateBikes() {
                 let priceVal = bike.price;
                 let gearVal = bike.gear;
                 let typeVal = bike.type;
+                let selectOption;
+
+                nameInput.setAttribute('type', 'text');
+                priceInput.setAttribute('type', 'number');
+                priceInput.setAttribute('step', '.01');
 
                 modal.innerHTML = '';
 
@@ -161,6 +166,22 @@ function updateBikes() {
 
                 span.classList.add('remove');
                 div.classList.add('modalContent');
+
+                for (let i = 0; i < bikeType.length; i++) {
+                    selectOption = document.createElement('option');
+
+                    selectOption.appendChild(document.createTextNode(`${bikeType.options[i].value}`));
+
+                    typeSelect.appendChild(selectOption);
+                }
+
+                for (let i = 0; i < bikeGear.length; i++) {
+                    selectOption = document.createElement('option');
+
+                    selectOption.appendChild(document.createTextNode(`${bikeGear.options[i].value}`));
+
+                    gearSelect.appendChild(selectOption);
+                }
 
                 modal.appendChild(div);
                 div.appendChild(h3);
@@ -184,9 +205,7 @@ function updateBikes() {
                 }
 
                 //database.modify(bike);
-            });            
-
-
+            });
         }
     });
 }
