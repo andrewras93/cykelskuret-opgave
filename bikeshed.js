@@ -2,7 +2,6 @@
 
 class DataBase {
     items = [];
-    
 
     constructor() {
         this.items = [];
@@ -38,6 +37,13 @@ class DataBase {
         this.items[index] = bike;
         this.updateLocalStorage();
 
+    }
+    get getItems() {
+        if (!this.items) {
+            return this.items = [];
+        } else {
+            return this.items;
+        }
     }
 
     sort(func) {
@@ -106,7 +112,7 @@ function updateBikes() {
 
     bikeList.innerHTML = '';
 
-    database.items.forEach(function (bike) {
+    database.getItems.forEach(function (bike) {
 
         if ( filters.length === 0 || filters.includes(bike.type)) {
 
@@ -148,10 +154,12 @@ function updateBikes() {
                 const typeSelect = document.createElement('select');
                 const span = document.createElement('span');
                 const btn = document.createElement('button');
+                let idVal = bike.id;
                 let nameVal = bike.name;
                 let priceVal = bike.price;
                 let gearVal = bike.gear;
                 let typeVal = bike.type;
+                let dateVal = bike.date;
                 let selectOption;
 
                 nameInput.setAttribute('type', 'text');
@@ -204,7 +212,21 @@ function updateBikes() {
                     }
                 }
 
-                //database.modify(bike);
+                btn.onclick = function () {
+
+                    if (idVal === bike.id) {
+                        bike.name = nameInput.value;
+                        bike.price = priceInput.value;
+                        bike.gear = gearSelect.value;
+                        bike.type = typeSelect.value;
+                    }
+
+                    database.modify(bike);
+                    database.updateLocalStorage();
+                    updateBikes();
+                    modal.style.display = 'none';
+                }
+
             });
         }
     });
