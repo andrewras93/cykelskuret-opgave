@@ -75,7 +75,7 @@ class DataBase {
 
     remove(id) {
         this.items = this.items.filter(b => b.id !== id);
-        //this.updatedItems = this.updatedItems.filter(b => b.id !== id);
+        this.updatedItems = this.updatedItems.filter(b => b.id !== id);
         this.updateLocalStorage();
     }
 
@@ -103,6 +103,7 @@ const filterBtn = document.getElementById('filterBtn');
 const mountainBike = document.getElementById('mountainBike');
 const cityBike = document.getElementById('cityBike');
 const tandemBike = document.getElementById('tandemBike');
+const changelogList = document.createElement('ul');
 
 let database = new DataBase();
 updateBikes(); //Initialize first update if database had items from local storage
@@ -146,17 +147,22 @@ function updateBikes() {
             const li = document.createElement('li'); 
             const span = document.createElement('span');
             const span2 = document.createElement('span');
+            const changelog = document.createElement('span');
+
+            changelog.appendChild(document.createTextNode(' Changelog'));
+            changelog.style.cssText = 'cursor: pointer; color: orange';
 
             li.appendChild(document.createTextNode(`Cykel: ID: ${bike.id}, Navn: ${bike.name}, Antal gear: ${bike.gear}, Type: ${bike.type}, Pris: ${numberFormat.format(bike.price)}, Dato: ${bike.date.toLocaleDateString(undefined, dateFormat)} `));
             li.appendChild(span);
             li.appendChild(span2);
+            li.appendChild(changelog);
 
             span.appendChild(document.createTextNode(`X`));
             span.classList.add('remove');
 
             
-            span2.appendChild(document.createTextNode(`Modify`));
-            span2.classList.add('modify');           
+            span2.appendChild(document.createTextNode(` Modify`));
+            span2.classList.add('modify');
 
             bikeList.appendChild(li);
 
@@ -167,7 +173,7 @@ function updateBikes() {
                 database.remove(bike.id);
 
             });
-
+            let idVal = bike.id;
             span2.addEventListener('click', () => {
 
                 const modal = document.getElementById('modal');
@@ -180,7 +186,7 @@ function updateBikes() {
                 const span = document.createElement('span');
                 const btn = document.createElement('button');
                 const modalErrMsg = document.createElement('span');
-                let idVal = bike.id;
+                //let idVal = bike.id;
                 let nameVal = bike.name;
                 let priceVal = bike.price;
                 let gearVal = bike.gear;
@@ -268,6 +274,61 @@ function updateBikes() {
                 }
 
             });
+
+            changelog.onclick = function () {
+
+                const changelogModal = document.getElementById('modal');
+                const div = document.createElement('div');
+                const h3 = document.createElement('h3');
+                //const changelogList = document.createElement('ul');
+                //const li = document.createElement('li');
+                const close = document.createElement('span');
+
+                changelogModal.innerHTML = '';
+                changelogList.innerHTML = '';
+
+                h3.appendChild(document.createTextNode('Changelog'));
+                close.appendChild(document.createTextNode('Close'));
+                close.style.cssText = 'font-size: 12px; color: red; cursor: pointer';
+
+                changelogModal.appendChild(div);
+
+                div.classList.add('modalContent');
+                div.appendChild(h3);
+
+                changelogModal.style.display = 'block';
+
+                database.updatedItems.forEach(function (bike) {
+
+                    if (bike.id === idVal) {
+                        //const changelogList = document.createElement('ul');
+                        const li = document.createElement('li');
+                        const arrow = document.createElement('span');
+
+                        arrow.appendChild(document.createTextNode('→'))
+                        arrow.setAttribute('class', 'arrow');
+                        console.log(database.updatedItems.length);
+                        li.appendChild(document.createTextNode(`${bike.name}, ${bike.gear} gear, ${bike.type}, ${numberFormat.format(bike.price)} ændret: ${bike.date.toLocaleString()} `));
+                        li.style.cssText = 'list-style-type: none';
+                        li.appendChild(arrow);
+
+                        console.log(bike.date);
+
+                        //div.appendChild(changelogList);
+                        changelogList.appendChild(li);
+
+                    }
+
+                });
+                div.appendChild(changelogList);
+                div.appendChild(close);
+
+                close.onclick = function(event) {
+                    changelogModal.style.display = 'none';
+                }
+
+            }
+
         }
     });
 }
