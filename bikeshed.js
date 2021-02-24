@@ -2,16 +2,26 @@
 
 class DataBase {
     items = [];
+    updatedItems = [];
 
     constructor() {
         this.items = [];
+        this.updatedItems = [];
 
         let db = localStorage.getItem("database");
         db = db ? JSON.parse(db) : [];
 
+        let updatedItems = localStorage.getItem("updatedItems");
+        updatedItems = updatedItems ? JSON.parse(updatedItems) : [];
+
         for(let i = 0; i < db.length; i++) {
             let bike = db[i];
             this.add(bike.name, bike.gear, bike.type, bike.price, bike.date, bike.lastModified);
+        }
+
+        for(let i = 0; i < updatedItems.length; i++) {
+            let bike = updatedItems[i];
+            this.addUpdatedItems(bike.id, bike.name, bike.gear, bike.type, bike.price, bike.date);
         }
     }
 
@@ -29,6 +39,19 @@ class DataBase {
 
         this.updateLocalStorage();
     }
+
+    addUpdatedItems(id, name, gear, type, price, date) {
+        this.updatedItems.push({
+            id: id,
+            name: name,
+            gear: gear,
+            type: type,
+            price: parseFloat(price),
+            date: new Date(date)
+        });
+
+        this.updateLocalStorage();
+    }
     
     modify(bike) {
 
@@ -39,11 +62,11 @@ class DataBase {
 
     }
     get getItems() {
-        if (!this.items) {
-            return this.items = [];
-        } else {
-            return this.items;
-        }
+        return this.items;
+    }
+
+    get updatedItems() {
+        return this.updatedItems;
     }
 
     sort(func) {
@@ -51,12 +74,14 @@ class DataBase {
     }
 
     remove(id) {
-        this.items = this.items.filter(b => b.id !== id); 
+        this.items = this.items.filter(b => b.id !== id);
+        //this.updatedItems = this.updatedItems.filter(b => b.id !== id);
         this.updateLocalStorage();
     }
 
     updateLocalStorage() {
         localStorage.setItem("database", JSON.stringify(this.items));
+        localStorage.setItem("updatedItems", JSON.stringify(this.updatedItems));
     }
 }
 
@@ -81,7 +106,7 @@ const tandemBike = document.getElementById('tandemBike');
 
 let database = new DataBase();
 updateBikes(); //Initialize first update if database had items from local storage
-
+console.log(database.updatedItems);
 function addBike(e){
 
     e.preventDefault();
@@ -160,7 +185,7 @@ function updateBikes() {
                 let priceVal = bike.price;
                 let gearVal = bike.gear;
                 let typeVal = bike.type;
-                let dateVal = bike.date;
+                //let dateVal = bike.date;
                 let selectOption;
 
                 nameInput.setAttribute('type', 'text');
@@ -223,12 +248,15 @@ function updateBikes() {
                             modalErrMsg.innerHTML = 'Udfyld venligst både Navn og Pris';
 
                         } else {
+                            bike.id = idVal;
                             bike.name = nameInput.value;
                             bike.price = priceInput.value;
                             bike.gear = gearSelect.value;
                             bike.type = typeSelect.value;
+                            const date = new Date();
 
                             database.modify(bike);
+                            database.addUpdatedItems(idVal, nameInput.value, gearSelect.value, typeSelect.value, priceInput.value, date);
                             database.updateLocalStorage();
                             updateBikes();
                             modal.style.display = 'none';
