@@ -107,7 +107,7 @@ const changelogList = document.createElement('ul');
 
 let database = new DataBase();
 updateBikes(); //Initialize first update if database had items from local storage
-console.log(database.updatedItems);
+
 function addBike(e){
 
     e.preventDefault();
@@ -186,12 +186,10 @@ function updateBikes() {
                 const span = document.createElement('span');
                 const btn = document.createElement('button');
                 const modalErrMsg = document.createElement('span');
-                //let idVal = bike.id;
                 let nameVal = bike.name;
                 let priceVal = bike.price;
                 let gearVal = bike.gear;
                 let typeVal = bike.type;
-                //let dateVal = bike.date;
                 let selectOption;
 
                 nameInput.setAttribute('type', 'text');
@@ -280,8 +278,6 @@ function updateBikes() {
                 const changelogModal = document.getElementById('modal');
                 const div = document.createElement('div');
                 const h3 = document.createElement('h3');
-                //const changelogList = document.createElement('ul');
-                //const li = document.createElement('li');
                 const close = document.createElement('span');
 
                 changelogModal.innerHTML = '';
@@ -301,20 +297,16 @@ function updateBikes() {
                 database.updatedItems.forEach(function (bike) {
 
                     if (bike.id === idVal) {
-                        //const changelogList = document.createElement('ul');
+
                         const li = document.createElement('li');
                         const arrow = document.createElement('span');
 
                         arrow.appendChild(document.createTextNode('→'))
                         arrow.setAttribute('class', 'arrow');
-                        console.log(database.updatedItems.length);
                         li.appendChild(document.createTextNode(`${bike.name}, ${bike.gear} gear, ${bike.type}, ${numberFormat.format(bike.price)} ændret: ${bike.date.toLocaleString()} `));
                         li.style.cssText = 'list-style-type: none';
                         li.appendChild(arrow);
 
-                        console.log(bike.date);
-
-                        //div.appendChild(changelogList);
                         changelogList.appendChild(li);
 
                     }
