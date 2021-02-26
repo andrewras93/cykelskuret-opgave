@@ -41,6 +41,7 @@ class DataBase {
     }
 
     addUpdatedItems(id, name, gear, type, price, date) {
+
         this.updatedItems.push({
             id: id,
             name: name,
@@ -142,8 +143,6 @@ function updateBikes() {
 
         if ( filters.length === 0 || filters.includes(bike.type)) {
 
-
-            const dateFormat = { year: 'numeric', month: 'numeric', day: 'numeric' }; 
             const li = document.createElement('li'); 
             const span = document.createElement('span');
             const span2 = document.createElement('span');
@@ -152,20 +151,18 @@ function updateBikes() {
             changelog.appendChild(document.createTextNode(' Changelog'));
             changelog.style.cssText = 'cursor: pointer; color: orange';
 
-            li.appendChild(document.createTextNode(`Cykel: ID: ${bike.id}, Navn: ${bike.name}, Antal gear: ${bike.gear}, Type: ${bike.type}, Pris: ${numberFormat.format(bike.price)}, Dato: ${bike.date.toLocaleDateString(undefined, dateFormat)} `));
+            li.appendChild(document.createTextNode(`Cykel: ID: ${bike.id}, Navn: ${bike.name}, Antal gear: ${bike.gear}, Type: ${bike.type}, Pris: ${numberFormat.format(bike.price)}, Dato: ${bike.date.toLocaleDateString()}`));
             li.appendChild(span);
             li.appendChild(span2);
             li.appendChild(changelog);
 
-            span.appendChild(document.createTextNode(`X`));
+            span.appendChild(document.createTextNode(` X`));
             span.classList.add('remove');
-
             
             span2.appendChild(document.createTextNode(` Modify`));
             span2.classList.add('modify');
 
             bikeList.appendChild(li);
-
 
             span.addEventListener('click', () => {
 
@@ -252,15 +249,16 @@ function updateBikes() {
                             modalErrMsg.innerHTML = 'Udfyld venligst både Navn og Pris';
 
                         } else {
+                            database.modify(bike);
+                            database.addUpdatedItems(bike.id, bike.name, bike.gear, bike.type, bike.price, bike.lastModified);
+
                             bike.id = idVal;
                             bike.name = nameInput.value;
-                            bike.price = priceInput.value;
                             bike.gear = gearSelect.value;
                             bike.type = typeSelect.value;
-                            const date = new Date();
+                            bike.price = priceInput.value;
 
-                            database.modify(bike);
-                            database.addUpdatedItems(idVal, nameInput.value, gearSelect.value, typeSelect.value, priceInput.value, date);
+                            database.getItems.map(obj => database.updatedItems.find(o => o.id === obj.id) || obj);
                             database.updateLocalStorage();
                             updateBikes();
                             modal.style.display = 'none';
@@ -301,10 +299,13 @@ function updateBikes() {
                         const li = document.createElement('li');
                         const arrow = document.createElement('span');
 
-                        arrow.appendChild(document.createTextNode('→'))
                         arrow.setAttribute('class', 'arrow');
-                        li.appendChild(document.createTextNode(`${bike.name}, ${bike.gear} gear, ${bike.type}, ${numberFormat.format(bike.price)} ændret: ${bike.date.toLocaleString()} `));
+                        arrow.appendChild(document.createTextNode(' →'));
+
                         li.style.cssText = 'list-style-type: none';
+                        li.appendChild(document.createTextNode(`${bike.name},
+                        ${bike.gear} gear, ${bike.type}, ${numberFormat.format(bike.price)} ændret: ${bike.date.toLocaleString()}`));
+
                         li.appendChild(arrow);
 
                         changelogList.appendChild(li);
@@ -317,6 +318,12 @@ function updateBikes() {
 
                 close.onclick = function(event) {
                     changelogModal.style.display = 'none';
+                }
+
+                window.onclick = function (event) {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
                 }
 
             }
