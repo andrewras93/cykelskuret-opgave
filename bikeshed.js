@@ -2,11 +2,11 @@
 
 class DataBase {
     items = [];
-    updatedItems = [];
+    changelog = [];
 
     constructor() {
         this.items = [];
-        this.updatedItems = [];
+        this.changelog = [];
 
         let db = localStorage.getItem("database");
         db = db ? JSON.parse(db) : [];
@@ -21,7 +21,7 @@ class DataBase {
 
         for(let i = 0; i < updatedItems.length; i++) {
             let bike = updatedItems[i];
-            this.addUpdatedItems(bike.id, bike.name, bike.gear, bike.type, bike.price, bike.date);
+            this.changelog.push(bike);
         }
     }
 
@@ -30,7 +30,7 @@ class DataBase {
         this.items.push({
             id: this.items.length,
             name: name,
-            gear: gear,
+            gear: parseInt(gear),
             type: type,
             price: parseFloat(price),
             date: new Date(date),
@@ -39,35 +39,31 @@ class DataBase {
 
         this.updateLocalStorage();
     }
-
-    addUpdatedItems(id, name, gear, type, price, date) {
-
-        this.updatedItems.push({
-            id: id,
-            name: name,
-            gear: gear,
-            type: type,
-            price: parseFloat(price),
-            date: new Date(date)
-        });
-
-        this.updateLocalStorage();
-    }
     
-    modify(bike) {
+    modify(oldBike, newBike) {
 
-        bike.lastModified = new Date();
-        let index = this.items.indexOf(bike.id);
-        this.items[index] = bike;
+        newBike.lastModified = new Date();
+        newBike.price = parseFloat(newBike.price);
+        newBike.gear = parseInt(newBike.gear);
+        let index = this.items.indexOf(oldBike);
+
+        if(index === -1) {
+            console.log('Bike id was not found');
+            return
+        }
+
+        this.changelog.push(newBike);
+        this.items[index] = newBike;
         this.updateLocalStorage();
+        this.updateLocalStorageChangelog();
 
     }
     get getItems() {
         return this.items;
     }
 
-    get updatedItems() {
-        return this.updatedItems;
+    get getChangelog() {
+        return this.changelog;
     }
 
     sort(func) {
@@ -76,13 +72,17 @@ class DataBase {
 
     remove(id) {
         this.items = this.items.filter(b => b.id !== id);
-        this.updatedItems = this.updatedItems.filter(b => b.id !== id);
+        this.changelog = this.changelog.filter(b => b.id !== id);
         this.updateLocalStorage();
     }
 
     updateLocalStorage() {
         localStorage.setItem("database", JSON.stringify(this.items));
-        localStorage.setItem("updatedItems", JSON.stringify(this.updatedItems));
+
+    }
+
+    updateLocalStorageChangelog() {
+        localStorage.setItem("updatedItems", JSON.stringify(this.changelog));
     }
 }
 
@@ -249,17 +249,17 @@ function updateBikes() {
                             modalErrMsg.innerHTML = 'Udfyld venligst både Navn og Pris';
 
                         } else {
-                            database.modify(bike);
-                            database.addUpdatedItems(bike.id, bike.name, bike.gear, bike.type, bike.price, bike.lastModified);
+                            let newBike = {
+                                id: idVal,
+                                name: nameInput.value,
+                                gear: gearSelect.value,
+                                type: typeSelect.value,
+                                price: priceInput.value,
+                                date: bike.date
+                            }
 
-                            bike.id = idVal;
-                            bike.name = nameInput.value;
-                            bike.gear = gearSelect.value;
-                            bike.type = typeSelect.value;
-                            bike.price = priceInput.value;
+                            database.modify(bike, newBike);
 
-                            database.getItems.map(obj => database.updatedItems.find(o => o.id === obj.id) || obj);
-                            database.updateLocalStorage();
                             updateBikes();
                             modal.style.display = 'none';
                         }
@@ -292,7 +292,7 @@ function updateBikes() {
 
                 changelogModal.style.display = 'block';
 
-                database.updatedItems.forEach(function (bike) {
+                database.getChangelog.forEach(function (bike) {
 
                     if (bike.id === idVal) {
 
