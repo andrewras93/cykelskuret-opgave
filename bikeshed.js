@@ -2,16 +2,26 @@
 
 class DataBase {
     items = [];
+    changelog = [];
 
     constructor() {
         this.items = [];
+        this.changelog = [];
 
         let db = localStorage.getItem("database");
         db = db ? JSON.parse(db) : [];
 
+        let updatedItems = localStorage.getItem("updatedItems");
+        updatedItems = updatedItems ? JSON.parse(updatedItems) : [];
+
         for(let i = 0; i < db.length; i++) {
             let bike = db[i];
             this.add(bike.name, bike.gear, bike.type, bike.price, bike.date, bike.lastModified);
+        }
+
+        for(let i = 0; i < updatedItems.length; i++) {
+            let bike = updatedItems[i];
+            this.changelog.push(bike);
         }
     }
 
@@ -20,7 +30,7 @@ class DataBase {
         this.items.push({
             id: this.items.length,
             name: name,
-            gear: gear,
+            gear: parseInt(gear),
             type: type,
             price: parseFloat(price),
             date: new Date(date),
@@ -30,21 +40,41 @@ class DataBase {
         this.updateLocalStorage();
     }
     
-    modify(bike) {
+    modify(oldBike, newBike) {
 
-        bike.lastModified = new Date();
-        let index = this.items.indexOf(bike.id);
-        this.items[index] = bike;
+        newBike.lastModified = new Date();
+        newBike.price = parseFloat(newBike.price);
+        newBike.gear = parseInt(newBike.gear);
+        let index = this.items.indexOf(oldBike);
+
+        if(index === -1) {
+            console.log('Bike id was not found');
+            return
+        }
+
+        this.changelog.push(newBike);
+        this.items[index] = newBike;
         this.updateLocalStorage();
+        this.updateLocalStorageChangelog();
 
     }
+
+    get getItems() {
+        return this.items;
+    }
+
+    get getChangelog() {
+        return this.changelog;
+    }
+
 
     sort(func) {
         return this.items.sort(func)
     }
 
     remove(id) {
-        this.items = this.items.filter(b => b.id !== id); 
+        this.items = this.items.filter(b => b.id !== id);
+        this.changelog = this.changelog.filter(b => b.id !== id);
         this.updateLocalStorage();
     }
 
@@ -54,6 +84,11 @@ class DataBase {
 
     updateLocalStorage() {
         localStorage.setItem("database", JSON.stringify(this.items));
+
+    }
+
+    updateLocalStorageChangelog() {
+        localStorage.setItem("updatedItems", JSON.stringify(this.changelog));
     }
 }
 
@@ -75,6 +110,7 @@ const filterBtn = document.getElementById('filterBtn');
 const mountainBike = document.getElementById('mountainBike');
 const cityBike = document.getElementById('cityBike');
 const tandemBike = document.getElementById('tandemBike');
+const changelogList = document.createElement('ul');
 
 let database = new DataBase();
 updateBikes(); //Initialize first update if database had items from local storage
@@ -113,25 +149,26 @@ function updateBikes() {
 
         if ( filters.length === 0 || filters.includes(bike.type)) {
 
-
-            const dateFormat = { year: 'numeric', month: 'numeric', day: 'numeric' }; 
             const li = document.createElement('li'); 
             const span = document.createElement('span');
             const span2 = document.createElement('span');
+            const changelog = document.createElement('span');
 
-            li.appendChild(document.createTextNode(`Cykel: ID: ${bike.id}, Navn: ${bike.name}, Antal gear: ${bike.gear}, Type: ${bike.type}, Pris: ${numberFormat.format(bike.price)}, Dato: ${bike.date.toLocaleDateString(undefined, dateFormat)} `));
+            changelog.appendChild(document.createTextNode(' Changelog'));
+            changelog.style.cssText = 'cursor: pointer; color: orange';
+
+            li.appendChild(document.createTextNode(`Cykel: ID: ${bike.id}, Navn: ${bike.name}, Antal gear: ${bike.gear}, Type: ${bike.type}, Pris: ${numberFormat.format(bike.price)}, Dato: ${bike.date.toLocaleDateString()}`));
             li.appendChild(span);
             li.appendChild(span2);
+            li.appendChild(changelog);
 
-            span.appendChild(document.createTextNode(`X`));
+            span.appendChild(document.createTextNode(` X`));
             span.classList.add('remove');
-
             
-            span2.appendChild(document.createTextNode(`Modify`));
-            span2.classList.add('modify');           
+            span2.appendChild(document.createTextNode(` Modify`));
+            span2.classList.add('modify');
 
             bikeList.appendChild(li);
-
 
             span.addEventListener('click', () => {
 
@@ -139,7 +176,7 @@ function updateBikes() {
                 database.remove(bike.id);
 
             });
-
+            let idVal = bike.id;
             span2.addEventListener('click', () => {
 
                 const modal = document.getElementById('modal');
@@ -152,12 +189,10 @@ function updateBikes() {
                 const span = document.createElement('span');
                 const btn = document.createElement('button');
                 const modalErrMsg = document.createElement('span');
-                let idVal = bike.id;
                 let nameVal = bike.name;
                 let priceVal = bike.price;
                 let gearVal = bike.gear;
                 let typeVal = bike.type;
-                let dateVal = bike.date;
                 let selectOption;
 
                 nameInput.setAttribute('type', 'text');
@@ -220,13 +255,17 @@ function updateBikes() {
                             modalErrMsg.innerHTML = 'Udfyld venligst både Navn og Pris';
 
                         } else {
-                            bike.name = nameInput.value;
-                            bike.price = priceInput.value;
-                            bike.gear = gearSelect.value;
-                            bike.type = typeSelect.value;
+                            let newBike = {
+                                id: idVal,
+                                name: nameInput.value,
+                                gear: gearSelect.value,
+                                type: typeSelect.value,
+                                price: priceInput.value,
+                                date: bike.date
+                            }
 
-                            database.modify(bike);
-                            database.updateLocalStorage();
+                            database.modify(bike, newBike);
+
                             updateBikes();
                             modal.style.display = 'none';
                         }
@@ -237,6 +276,64 @@ function updateBikes() {
                 }
 
             });
+
+            changelog.onclick = function () {
+
+                const changelogModal = document.getElementById('modal');
+                const div = document.createElement('div');
+                const h3 = document.createElement('h3');
+                const close = document.createElement('span');
+
+                changelogModal.innerHTML = '';
+                changelogList.innerHTML = '';
+
+                h3.appendChild(document.createTextNode('Changelog'));
+                close.appendChild(document.createTextNode('Close'));
+                close.style.cssText = 'font-size: 12px; color: red; cursor: pointer';
+
+                changelogModal.appendChild(div);
+
+                div.classList.add('modalContent');
+                div.appendChild(h3);
+
+                changelogModal.style.display = 'block';
+
+                database.getChangelog.forEach(function (bike) {
+
+                    if (bike.id === idVal) {
+
+                        const li = document.createElement('li');
+                        const arrow = document.createElement('span');
+
+                        arrow.setAttribute('class', 'arrow');
+                        arrow.appendChild(document.createTextNode(' →'));
+
+                        li.style.cssText = 'list-style-type: none';
+                        li.appendChild(document.createTextNode(`${bike.name},
+                        ${bike.gear} gear, ${bike.type}, ${numberFormat.format(bike.price)} ændret: ${bike.date.toLocaleString()}`));
+
+                        li.appendChild(arrow);
+
+                        changelogList.appendChild(li);
+
+                    }
+
+                });
+                div.appendChild(changelogList);
+                div.appendChild(close);
+
+                close.onclick = function(event) {
+                    changelogModal.style.display = 'none';
+                }
+
+                window.onclick = function (event) {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                }
+
+            }
+
         }
     });
 }
