@@ -2,7 +2,6 @@
 
 class DataBase {
     items = [];
-    
 
     constructor() {
         this.items = [];
@@ -141,12 +140,103 @@ function updateBikes() {
 
             });
 
-            //Modify the bike when called
             span2.addEventListener('click', () => {
-                database.modify(bike);
-            });            
 
+                const modal = document.getElementById('modal');
+                const div = document.createElement('div');
+                const h3 = document.createElement('h3');
+                const nameInput = document.createElement('input');
+                const priceInput = document.createElement('input');
+                const gearSelect = document.createElement('select');
+                const typeSelect = document.createElement('select');
+                const span = document.createElement('span');
+                const btn = document.createElement('button');
+                const modalErrMsg = document.createElement('span');
+                let idVal = bike.id;
+                let nameVal = bike.name;
+                let priceVal = bike.price;
+                let gearVal = bike.gear;
+                let typeVal = bike.type;
+                let dateVal = bike.date;
+                let selectOption;
 
+                nameInput.setAttribute('type', 'text');
+                priceInput.setAttribute('type', 'number');
+                priceInput.setAttribute('step', '.01');
+
+                modal.innerHTML = '';
+
+                h3.appendChild(document.createTextNode('Modify'));
+                span.appendChild(document.createTextNode('X'));
+                btn.appendChild(document.createTextNode('Gem'));
+
+                span.classList.add('remove');
+                div.classList.add('modalContent');
+
+                for (let i = 0; i < bikeType.length; i++) {
+                    selectOption = document.createElement('option');
+
+                    selectOption.appendChild(document.createTextNode(`${bikeType.options[i].value}`));
+
+                    typeSelect.appendChild(selectOption);
+                }
+
+                for (let i = 0; i < bikeGear.length; i++) {
+                    selectOption = document.createElement('option');
+
+                    selectOption.appendChild(document.createTextNode(`${bikeGear.options[i].value}`));
+
+                    gearSelect.appendChild(selectOption);
+                }
+
+                modal.appendChild(div);
+                div.appendChild(h3);
+                div.appendChild(nameInput).value = nameVal;
+                div.appendChild(priceInput).value = priceVal;
+                div.appendChild(gearSelect).value = gearVal;
+                div.appendChild(typeSelect).value = typeVal;
+                div.appendChild(btn);
+                div.appendChild(span);
+                div.appendChild(modalErrMsg);
+
+                modal.style.display = 'block';
+
+                span.onclick = function(event) {
+                    modal.style.display = 'none';
+                }
+
+                window.onclick = function (event) {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                }
+
+                btn.onclick = function () {
+
+                    if (idVal === bike.id) {
+
+                        if (!nameInput.value || !priceInput.value) {
+
+                            modalErrMsg.innerHTML = 'Udfyld venligst både Navn og Pris';
+
+                        } else {
+                            bike.name = nameInput.value;
+                            bike.price = priceInput.value;
+                            bike.gear = gearSelect.value;
+                            bike.type = typeSelect.value;
+
+                            database.modify(bike);
+                            database.updateLocalStorage();
+                            updateBikes();
+                            modal.style.display = 'none';
+                        }
+                    } else {
+                        return 'ID does not match.'
+                    }
+
+                }
+
+            });
         }
     });
 }
