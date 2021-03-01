@@ -58,6 +58,7 @@ class DataBase {
         this.updateLocalStorageChangelog();
 
     }
+
     get getItems() {
         return this.items;
     }
@@ -65,6 +66,7 @@ class DataBase {
     get getChangelog() {
         return this.changelog;
     }
+
 
     sort(func) {
         return this.items.sort(func)
@@ -74,6 +76,10 @@ class DataBase {
         this.items = this.items.filter(b => b.id !== id);
         this.changelog = this.changelog.filter(b => b.id !== id);
         this.updateLocalStorage();
+    }
+
+    get getItems() {
+        return this.items;
     }
 
     updateLocalStorage() {
