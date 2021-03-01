@@ -2,6 +2,7 @@
 
 class DataBase {
     items = [];
+    
 
     constructor() {
         this.items = [];
@@ -11,11 +12,11 @@ class DataBase {
 
         for(let i = 0; i < db.length; i++) {
             let bike = db[i];
-            this.add(bike.name, bike.gear, bike.type, bike.price, bike.date);
+            this.add(bike.name, bike.gear, bike.type, bike.price, bike.date, bike.lastModified);
         }
     }
 
-    add(name, gear, type, price, date) {
+    add(name, gear, type, price, date, lastModified) {
 
         this.items.push({
             id: this.items.length,
@@ -23,10 +24,20 @@ class DataBase {
             gear: gear,
             type: type,
             price: parseFloat(price),
-            date: new Date(date)
+            date: new Date(date),
+            lastModified: lastModified ? lastModified : new Date()
         });
 
         this.updateLocalStorage();
+    }
+    
+    modify(bike) {
+
+        bike.lastModified = new Date();
+        let index = this.items.indexOf(bike.id);
+        this.items[index] = bike;
+        this.updateLocalStorage();
+
     }
 
     sort(func) {
@@ -34,7 +45,7 @@ class DataBase {
     }
 
     remove(id) {
-        this.items = this.items.filter(b => b.id !== id);
+        this.items = this.items.filter(b => b.id !== id); 
         this.updateLocalStorage();
     }
 
@@ -103,17 +114,25 @@ function updateBikes() {
 
         if ( filters.length === 0 || filters.includes(bike.type)) {
 
-            const dateFormat = { year: 'numeric', month: 'numeric', day: 'numeric' };
-            const li = document.createElement('li');
+
+            const dateFormat = { year: 'numeric', month: 'numeric', day: 'numeric' }; 
+            const li = document.createElement('li'); 
             const span = document.createElement('span');
+            const span2 = document.createElement('span');
 
             li.appendChild(document.createTextNode(`Cykel: ID: ${bike.id}, Navn: ${bike.name}, Antal gear: ${bike.gear}, Type: ${bike.type}, Pris: ${numberFormat.format(bike.price)}, Dato: ${bike.date.toLocaleDateString(undefined, dateFormat)} `));
             li.appendChild(span);
+            li.appendChild(span2);
 
             span.appendChild(document.createTextNode(`X`));
             span.classList.add('remove');
 
+            
+            span2.appendChild(document.createTextNode(`Modify`));
+            span2.classList.add('modify');           
+
             bikeList.appendChild(li);
+
 
             span.addEventListener('click', () => {
 
@@ -121,6 +140,13 @@ function updateBikes() {
                 database.remove(bike.id);
 
             });
+
+            //Modify the bike when called
+            span2.addEventListener('click', () => {
+                database.modify(bike);
+            });            
+
+
         }
     });
 }
