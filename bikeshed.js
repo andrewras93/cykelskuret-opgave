@@ -38,9 +38,6 @@ class DataBase {
         this.updateLocalStorage();
 
     }
-    get getItems() {
-        return this.items;
-    }
 
     sort(func) {
         return this.items.sort(func)
