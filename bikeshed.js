@@ -49,6 +49,10 @@ class DataBase {
         this.updateLocalStorage();
     }
 
+    get getItems() {
+        return this.items;
+    }
+
     updateLocalStorage() {
         localStorage.setItem("database", JSON.stringify(this.items));
     }
@@ -106,7 +110,7 @@ function updateBikes() {
 
     bikeList.innerHTML = '';
 
-    database.items.forEach(function (bike) {
+    database.getItems.forEach(function (bike) {
 
         if ( filters.length === 0 || filters.includes(bike.type)) {
 
