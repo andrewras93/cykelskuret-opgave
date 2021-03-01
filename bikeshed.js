@@ -55,6 +55,10 @@ class DataBase {
         this.updateLocalStorage();
     }
 
+    get getItems() {
+        return this.items;
+    }
+
     updateLocalStorage() {
         localStorage.setItem("database", JSON.stringify(this.items));
     }
